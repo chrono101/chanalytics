@@ -20,66 +20,110 @@ $( document ).ready(function() {
 // Gets boards listing and populates select element
 function getBoardsListing() {
   // Perform JSON request
-  var jqxhr = $.getJSON("http://jsonp.jit.su/?url=http://a.4cdn.org/boards.json", { format: "json" });
-  jqxhr.done(function (data) {
-    $.each(data.boards, function (i, item) {
-      var worksafe = "";
-      var posts = 0;
-      if (item.ws_board == 1) { worksafe = "Worksafe" } else { worksafe = "NSFW" }
-      var posts = (item.per_page * item.pages);
-      $("#board").append("<option value=\"" + item.board + "\">/" + item.board + "/ - " + item.title + " (" + worksafe + ", " + posts + " threads)</option>");
-    });
-  });
-  jqxhr.fail(function () {  });
-  jqxhr.always(function () {  });
+  var chan_url = "http://a.4cdn.org/boards.json";
+  var yql_url = 'http://query.yahooapis.com/v1/public/yql';
+  var data = {
+    'q': 'SELECT * FROM json WHERE url="'+ chan_url +'"',
+    'format': 'json',
+    'jsonCompat': 'new',
+  }
+  
+  $.ajax({
+    'url': yql_url,
+    'data': {
+      'q': 'SELECT * FROM json WHERE url="'+ chan_url +'"',
+      'format': 'json',
+      'jsonCompat': 'new',
+    },
+    'dataType': 'jsonp',
+    'success': function(response) {
+      // console.log(response)
+      var data = response.query.results.json; // This is gross
+      $.each(data.boards, function (i, item) {
+        var worksafe = "";
+        var posts = 0;
+        if (item.ws_board == 1) { worksafe = "Worksafe" } else { worksafe = "NSFW" }
+        var posts = (item.per_page * item.pages);
+        $("#board").append("<option value=\"" + item.board + "\">/" + item.board + "/ - " + item.title + " (" + worksafe + ", " + posts + " threads)</option>");
+      });
+    },
+  });  
   return;
 }
 
 // Gets threads listing for the selected board and populates a select element
 function getThreadsListing() {
-  var selectedBoard = $("#board").val();
+  // Clear last choice
   $("#thread").empty();
   // Perform JSON request
-  var jqxhr = $.getJSON("http://jsonp.jit.su/?url=http://a.4cdn.org/" + selectedBoard + "/catalog.json", { format: "json" });
-  jqxhr.done(function (data) {
-    $.each(data, function (i, page) {
-      $.each(page.threads, function (j, item) {
-        var subject = "";
-        if (item.sub) {
-          subject = item.sub;
-        } else {
-          subject = "No Subject";
-        }
-        $("#thread").append("<option value=\"" + item.no + "\">No. " + item.no+ " - " + item.replies + " replies - " +subject + "</option>");
+  var selectedBoard = $("#board").val();
+  var chan_url = "http://a.4cdn.org/" + selectedBoard + "/catalog.json";
+  var yql_url = 'http://query.yahooapis.com/v1/public/yql';
+  var data = {
+    'q': 'SELECT * FROM json WHERE url="'+ chan_url +'"',
+    'format': 'json',
+    'jsonCompat': 'new',
+  }  
+  
+  $.ajax({
+    'url': yql_url,
+    'data': {
+      'q': 'SELECT * FROM json WHERE url="'+ chan_url +'"',
+      'format': 'json',
+      'jsonCompat': 'new',
+    },
+    'dataType': 'jsonp',
+    'success': function(response) {
+      // console.log(response)
+      var data = response.query.results.json.json; // What the fug
+      $.each(data, function (i, page) {
+        $.each(page.threads, function (j, item) {
+          var subject = "";
+          if (item.sub) {
+            subject = item.sub;
+          } else {
+            subject = "No Subject";
+          }
+          $("#thread").append("<option value=\"" + item.no + "\">No. " + item.no+ " - " + item.replies + " replies - " +subject + "</option>");
+        });
       });
-    });
-  });
-  jqxhr.fail(function () {  });
-  jqxhr.always(function () {  });
+    },
+  });    
   return;
 }
 
 function getThreadStats() {
+  // Perform JSON request
   var selectedBoard = $("#board").val();
   var selectedThread = $("#thread").val();
-  // Perform JSON request
-  var jqxhr = $.getJSON("http://jsonp.jit.su/?url=http://a.4cdn.org/" + selectedBoard +"/res/" + selectedThread + ".json", { format: "json" });
-  jqxhr.done(function (data) {
-    global_threadData = data;
-    // General Stats Analytic
-    $("#thread-link").attr("href", "http://boards.4chan.org/" + selectedBoard + "/res/" + selectedThread);
-    $("#thread-link").text("/" + selectedBoard + "/" + selectedThread);
-    
-    analytic_generalStats(data);
-    
-    analytic_timeline(data)
-    
-    analytic_images(data);
-    
-    analytic_wordCounts(data);
-  });
-  jqxhr.fail(function () {   });
-  jqxhr.always(function () {   });
+  var chan_url = "http://a.4cdn.org/" + selectedBoard + "/res/" + selectedThread + ".json";
+  var yql_url = 'http://query.yahooapis.com/v1/public/yql';
+  var data = {
+    'q': 'SELECT * FROM json WHERE url="'+ chan_url +'"',
+    'format': 'json',
+    'jsonCompat': 'new',
+  }  
+  
+  $.ajax({
+    'url': yql_url,
+    'data': {
+      'q': 'SELECT * FROM json WHERE url="'+ chan_url +'"',
+      'format': 'json',
+      'jsonCompat': 'new',
+    },
+    'dataType': 'jsonp',
+    'success': function(response) {
+      // console.log(response)
+      var data = response.query.results.json; // What the fug 2
+      global_threadData = data;    
+      $("#thread-link").attr("href", "http://boards.4chan.org/" + selectedBoard + "/res/" + selectedThread);
+      $("#thread-link").text("/" + selectedBoard + "/" + selectedThread);    
+      analytic_generalStats(data);    
+      analytic_timeline(data);
+      analytic_images(data);    
+      analytic_wordCounts(data);  
+    }
+  });  
   return;
 }
 

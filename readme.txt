@@ -20,8 +20,8 @@ GENERAL ISSUES
 [DONE] - ScrollSpy navigation
 [DONE] - Primary controls
 [TODO] - Refactor code
-[TODO] - Get CORS working
-[TODO] - Move this motherfucker to Git
+[NO] - Get CORS working (replaced with YQL JSONP)
+[DONE] - Move this motherfucker to Git
 
 ===============
 TIMELINE ANALYTICS
@@ -30,10 +30,10 @@ TIMELINE ANALYTICS
 [DONE] - When were replies with images only made? {TIMELINE-REPLIES}
 [DONE] - When were replies with comments only made? {TIMELINE-REPLIES}
 [DONE] - When were replies with both made? {TIMELINE-REPLIES}
-[NO] - When did Tripfags reply? 
+[NO] - When did any Name reply? 
 [DONE] - When did ID X reply? {TIMELINE-IDS}
 [DONE] - When did Country X reply? {TIMELINE-COUNTRIES}
-[DONE] - When did Tripfag X reply? {TIMELINE-NAMES}
+[DONE] - When did Name X reply? {TIMELINE-NAMES}
 [DONE] - When did Anonymous reply? {TIMELINE-NAMES}
 
 ===============
