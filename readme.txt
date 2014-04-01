@@ -21,7 +21,9 @@ GENERAL ISSUES
 [DONE] - Primary controls
 [TODO] - Refactor code
 [NO] - Get CORS working (replaced with YQL JSONP)
-[DONE] - Move this motherfucker to Git
+[DONE] - Move this to Git
+[TODO] - Standardize IDs
+[TODO] - Standardize JS variables and function names
 
 ===============
 TIMELINE ANALYTICS

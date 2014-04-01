@@ -37,7 +37,7 @@
           <li>jQuery CDN</li>
           <li>Bootstrap CDN</li>
           <li>Google (block at your own risk, charts won't work)</li>
-          <li>jsonp.jit.su (couldn't figure out how to use CORS properly)</li>
+          <li>Yahoo (for YQL as a JSON proxy)</li>
           <li>4chan.org</li>
         </ul>
         
@@ -82,7 +82,7 @@
     <div id="timeline" class="row">
       <div class="col-md-12">
         <h2>Timeline <small>When were replies made?</small></h2>
-        <ul class="nav nav-tabs" id="myTab">
+        <ul class="nav nav-tabs" id="timeline-tabs">
           <li class="active"><a href="#timeline-replies" data-toggle="tab" class="timeline-tab">Type</a></li>
           <li><a href="#timeline-names" data-toggle="tab" class="timeline-tab">Names</a></li>
           <li><a href="#timeline-ids" data-toggle="tab" class="timeline-tab">IDs</a></li>
@@ -103,13 +103,27 @@
     </div>
     <div class="row">
       <div class="col-md-4">
-        <h3>Replies</h3>        
-        <table id="generalStats" class="table table-striped">
-          <tr><td>Thread Link</td><td><a id="thread-link" href="#"></a></td></tr>
-          <tr><td>OP Time</td><td id="generalStats-OpTime"></td></tr>
-          <tr><td>Replies</td><td id="generalStats-Replies"></td></tr>
-          <tr><td>Images</td><td id="generalStats-Images"></td></tr>
-        </table>
+        <ul class="nav nav-tabs" id="reply-tabs">
+          <li class="active"><a href="#reply-general" data-toggle="tab">General</a></li>
+          <li><a href="#reply-influential" data-toggle="tab">Influential Replies</a></li>
+          <li><a href="#reply-timing" data-toggle="tab">Timing</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="reply-general">
+            <table id="generalStats" class="table table-striped">
+              <tr><td>Thread Link</td><td><a id="thread-link" href="#"></a></td></tr>
+              <tr><td>OP Time</td><td id="generalStats-OpTime"></td></tr>
+              <tr><td>Replies</td><td id="generalStats-Replies"></td></tr>
+              <tr><td>Images</td><td id="generalStats-Images"></td></tr>
+            </table>
+          </div>          
+          <div class="tab-pane" id="reply-influential">
+            <p>Analytic coming soon...</p>
+          </div>
+          <div class="tab-pane" id="reply-timing">
+            <p>Analytic coming soon...</p>
+          </div>
+        </div>        
       </div>
     </div>
     <div id="images" class="row">
@@ -118,25 +132,39 @@
       </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
-          <h3>Largest Images</h3>
-          <table id="imageStats" class="table table-striped">   
-            <tr><td>Largest Image Dimensions</td><td id="imageStats-largestDimensions"></td></tr>
-            <tr><td>Filename</td><td id="imageStats-largestDimensionsFn"></td></tr>
-            <tr><td>Largest Image Filesize</td><td id="imageStats-largestFilesize"></td></tr>
-            <tr><td>Filename</td><td id="imageStats-largestFilesizeFn"></td></tr>
-          </table>
-         <h3>Image Types</h3>
-          <table id="imageStats-FileTypeFreqs" class="table table-striped table-condensed"></table> 
-          <h3>Probable Image Sources</h3>
-          <table id="imageStats-ImageSources" class="table table-striped table-condensed"></table> 
+        <div class="col-md-12">
+          <ul class="nav nav-tabs" id="image-tabs">
+            <li class="active"><a href="#image-large-and-small" data-toggle="tab">Large And Small</a></li>
+            <li><a href="#image-type" data-toggle="tab">Type</a></li>
+            <li><a href="#image-source" data-toggle="tab">Source</a></li>
+            <li><a href="#image-filename" data-toggle="tab">File Names</a></li>
+            <li><a href="#image-4chan-reposts" data-toggle="tab">4chan Reposts</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="image-large-and-small">
+              <table id="imageStats" class="table table-striped">   
+                <tr><td>Largest Image Dimensions</td><td id="imageStats-largestDimensions"></td></tr>
+                <tr><td>Filename</td><td id="imageStats-largestDimensionsFn"></td></tr>
+                <tr><td>Largest Image Filesize</td><td id="imageStats-largestFilesize"></td></tr>
+                <tr><td>Filename</td><td id="imageStats-largestFilesizeFn"></td></tr>
+            </table>
+            </div>
+            <div class="tab-pane" id="image-type">
+              <table id="imageStats-FileTypeFreqs" class="table table-striped table-condensed"></table> 
+            </div>
+            <div class="tab-pane" id="image-source">
+              <table id="imageStats-ImageSources" class="table table-striped table-condensed"></table> 
+            </div>        
+            <div class="tab-pane" id="image-filename">
+              <div style="height:300px;overflow:auto">
+                <table id="imageStats-FnFreqs" class="table table-striped table-condensed"></table>
+              </div>
+            </div>
+            <div class="tab-pane" id="image-4chan-reposts">
+              <p>Analytic coming soon...</p>
+            </div>
         </div>
-        <div class="col-md-8">
-          <h3>File Names</h3>
-          <div style="height:500px;overflow:auto">
-            <table id="imageStats-FnFreqs" class="table table-striped table-condensed"></table>
-          </div>
-        </div>
+      </div>
     </div>
     <div  id="replies" class="row">
       <div class="col-md-12">
@@ -144,18 +172,17 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-4">
-        <h3>Comments</h3>
-        <table id="replyStats" class="table table-striped"><tr><td>Some</td><td>Junk</td></tr></table>
-      </div>
-      <div class="cold-md-8">
-        <h3>Keyword Analysis</h3>
-        <div style="height:300px;overflow:auto">
-          <table id="wordCounts" class="table table-striped table-condensed"></table>
+      <div class="col-md-12">
+        <ul class="nav nav-tabs" id="comment-tabs">
+          <li class="active"><a href="#comment-keywords" data-toggle="tab">Keywords</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="comment-keywords">            
+            <table id="wordCounts" class="table table-striped table-condensed"></table>            
+          </div>
         </div>
       </div>      
-    </div>
-        
-  </div>
+    </div>        
+  </div> <!-- /.container -->
 </body>
 </html>
