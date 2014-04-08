@@ -84,7 +84,13 @@ IMAGE ANALYTICS
 [TODO] 4chan Image Repost date
 
 - Using 4chan filename format, figure out when image was last posted
-- "X time ago" format
+- "X time ago" format (with exact date on mouseover)
+
+[TODO] Embedded Archive
+
+- Take (width*height)/bytes
+- Sort by highest ratio
+- List full filename  with link
 
 ===============
 COMMENT ANALYTICS

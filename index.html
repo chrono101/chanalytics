@@ -54,7 +54,7 @@
     </noscript>
     <div class="row">
       <div class="page-header">
-        <h1>Chanalytics <small>Data provided by <a href="http://www.4chan.org/">4chan</a></small></h1>
+        <h1>Chanalytics <small>Data source is <a href="http://www.4chan.org/">4chan.org</a></small></h1>
       </div>
     </div>
     <div class="row">
@@ -85,7 +85,7 @@
           <li>Select a thread</li>
           <li>Click "Get Stats"</li>
         </ol>
-        <p>If you have questions, comments, feature requests, bugs, etc., please <a href="http://www.chrono101.com/contact">contact me</a>.</p>
+        <p>Comments, feature requests, bugs, etc., please <a href="http://www.chrono101.com/contact">contact me</a>.</p>
       </div>
     </div>
     <div id="timeline" class="row">
@@ -111,7 +111,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-12">
         <ul class="nav nav-tabs" id="reply-tabs">
           <li class="active"><a href="#reply-general" data-toggle="tab">General</a></li>
           <li><a href="#reply-influential" data-toggle="tab">Influential Replies</a></li>
@@ -121,16 +121,16 @@
           <div class="tab-pane active" id="reply-general">
             <table id="generalStats" class="table table-striped">
               <tr><td>Thread Link</td><td><a id="thread-link" href="#"></a></td></tr>
-              <tr><td>OP Time</td><td id="generalStats-OpTime"></td></tr>
-              <tr><td>Replies</td><td id="generalStats-Replies"></td></tr>
-              <tr><td>Images</td><td id="generalStats-Images"></td></tr>
+              <tr><td>OP Time</td><td id="replyStats-opTime"></td></tr>
+              <tr><td>Replies</td><td id="replyStats-replies"></td></tr>
+              <tr><td>Images</td><td id="replyStats-images"></td></tr>
             </table>
           </div>          
           <div class="tab-pane" id="reply-influential">
-            <p>Analytic coming soon...</p>
+            <p><em>Analytic coming soon...</em></p>
           </div>
           <div class="tab-pane" id="reply-timing">
-            <p>Analytic coming soon...</p>
+            <p><em>Analytic coming soon...</em></p>
           </div>
         </div>        
       </div>
@@ -148,6 +148,7 @@
             <li><a href="#image-source" data-toggle="tab">Source</a></li>
             <li><a href="#image-filename" data-toggle="tab">File Names</a></li>
             <li><a href="#image-4chan-reposts" data-toggle="tab">4chan Reposts</a></li>
+            <li><a href="#image-embedded-archive" data-toggle="tab">Embedded Archives</a></li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="image-large-and-small">
@@ -159,18 +160,26 @@
             </table>
             </div>
             <div class="tab-pane" id="image-type">
+              <!-- <p>Show me the breakdown on the image types.</p> -->
               <table id="imageStats-FileTypeFreqs" class="table table-striped table-condensed"></table> 
             </div>
             <div class="tab-pane" id="image-source">
+              <!-- <p>Based on common naming conventions, what is the source of the image?</p> -->
               <table id="imageStats-ImageSources" class="table table-striped table-condensed"></table> 
             </div>        
             <div class="tab-pane" id="image-filename">
+              <!-- <p>What are the filenames of the images and how often did those filenames appear in the thread?</p> -->
               <div style="height:300px;overflow:auto">
                 <table id="imageStats-FnFreqs" class="table table-striped table-condensed"></table>
               </div>
             </div>
             <div class="tab-pane" id="image-4chan-reposts">
-              <p>Analytic coming soon...</p>
+              <!-- <p>For images saved from 4chan, when did the poster originally save the image to their computer?</p> -->
+              <p><em>Analytic coming soon...</em></p>
+            </div>
+            <div class="tab-pane" id="image-embedded-archive">
+              <!-- <p>Based on the ratio of image dimensions to filesize, do any images have potential embedded archives?</p> -->
+              <p><em>Analytic coming soon...</em></p>
             </div>
         </div>
       </div>
