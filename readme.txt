@@ -12,6 +12,10 @@ OVERALL DESIGN
 - Major sections further divided into tabs using bootstrap
   - Tabs can then be 1, 2, or 3-column layouts
 
+===============
+MISC
+===============
+- Look into Apache Mahout and Python NLPTK
 
 ===============
 GENERAL ISSUES
@@ -68,6 +72,10 @@ REPLY ANALYTICS
 
 - Geo map of replies, on boards that support it
 
+[TODO] Reply Chaining
+
+- Some sort of visualization of showing the reply chains in a thread
+
 ===============
 IMAGE ANALYTICS
 ===============
@@ -76,6 +84,7 @@ IMAGE ANALYTICS
 [DONE] - Largest Filesize (human readable) (show filename + ext)
 [DONE] - Smallest Dimensions (show filename + ext)
 [DONE] - Smallest Filesize (human readable) (show filename + ext)
+- Add link to images
 
 [UPDT] Image source identification
 
@@ -97,6 +106,14 @@ IMAGE ANALYTICS
 - Take (width*height)/bytes
 - Sort by highest ratio
 - List full filename  with link
+
+[TODO] Image Extensions
+
+- Add Pie Chart
+
+[TODO] Image Filenames
+
+- Add Link to images
 
 ===============
 COMMENT ANALYTICS
