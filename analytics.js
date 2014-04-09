@@ -1,9 +1,13 @@
 var global_threadData;
 
 $( document ).ready(function() {
-  getBoardsListing();
+  getBoardsListing();  
 
   $("#board").change(function() {
+    getThreadsListing();
+  });
+  
+  $("#getThreadsBtn").click(function() {
     getThreadsListing();
   });
 
@@ -131,12 +135,74 @@ function getThreadStats() {
 * Reply Analytics
 ******************************/
 function analytic_replies(thread) {
+// General Stats
+$("#replyStats-opTime").html(new Date(thread.posts[0].time * 1000));
+$("#replyStats-opSnippet").html("<em>\"" + thread.posts[0].com.slice(0, 50) + "\"</em>");
+$("#replyStats-replies").html(thread.posts[0].replies);
+$("#replyStats-images").html(thread.posts[0].images + 1);
+  
+// Reply type pie chart
+var repliesArray = [["Reply Type", "Replies"],
+                            ["Image and Comment", 0],
+                            ["Image Only", 0],
+                            ["Comment Only", 0],
+                            ["Unknown", 0]
+                           ];
+var repliesPC_container = document.getElementById("reply-type-chart");
+var repliesPC_chart = new google.visualization.PieChart(repliesPC_container);
+$.each(thread.posts, function(i, post) {
+  if (post.filename && post.com) {
+    // Image and Comment
+    repliesArray[1][1] = repliesArray[1][1] + 1;
+  } else if (post.filename && !post.com) {
+    // Image Only
+    repliesArray[2][1] = repliesArray[2][1] + 1;
+  } else if (!post.filename && post.com) {
+    // Comment Only
+    repliesArray[3][1] = repliesArray[3][1] + 1;
+  } else {
+    // Unknown
+    repliesArray[4][1] = repliesArray[4][1] + 1;
+  }  
+});
+var repliesPC_dataTable = google.visualization.arrayToDataTable(repliesArray);
+repliesPC_chart.draw(repliesPC_dataTable, { });
 
-  $("#replyStats-opTime").html(thread.posts[0].time);
-  $("#replyStats-replies").html(thread.posts[0].replies);
-  $("#replyStats-images").html(thread.posts[0].images + 1);
-  return;
- }
+// Timing Stats
+// Do nothing if only 1 reply
+if (thread.posts[0].replies > 0) {
+  var length = thread.posts[thread.posts.length - 1].time - thread.posts[0].time;
+  var firstGap = thread.posts[1].time - thread.posts[0].time;
+  var repliesPerMinute = thread.posts[0].replies / ((thread.posts[thread.posts.length - 1].time - thread.posts[0].time) / 60);
+  var avgTime = 0;
+  var longestTime = 0;
+  var shortestTime = 4294967296; // 2^32
+  // Now find average, longest, shortest
+  var totalTime = 0;
+  for (var i = 0; i < thread.posts.length - 2; i++) {
+    var time = thread.posts[i + 1].time - thread.posts[i].time;
+    if (time > longestTime) {
+      longestTime = time;
+    }
+    if (time < shortestTime) {
+      alert("New Shortest Time: " + time);
+      alert("Time 1: " + thread.posts[i+1].time + " Time 2: " + thread.posts[i].time);
+      shortestTime = time;
+    }
+    totalTime = totalTime + time;
+  }
+  avgTime = totalTime / thread.posts[0].replies;
+  
+  // Update the Table
+  $("#replyStats-timingLength").html(secondsToString(length));
+  $("#replyStats-timingFirst").html(secondsToString(firstGap));
+  $("#replyStats-timingPerMinute").html(repliesPerMinute.toPrecision(3) + " replies/minute");
+  $("#replyStats-timingAvgTime").html(secondsToString(avgTime.toPrecision(3)));
+  $("#replyStats-timingLongestTime").html(secondsToString(longestTime));
+  $("#replyStats-timingShortestTime").html(secondsToString(shortestTime));
+}
+return;
+}
 
  /******************************
 * Timeline Analytics
@@ -243,22 +309,36 @@ return;
 function analytic_images(thread) {
 var largestImageDimensions = 0;
 var largestImageFs = 0;
+var smallestImageDimensions = 100000000; // Max on /hr/
+var smallestImageFs = 8388608; // Max on /hr/
 var fileNameCounts = [];
 var fileExtCounts = [];
 var fileSourceCounts = [];
 
 $.each(thread.posts, function (i, post) {
-  // Check fle dimensions, update max if needed
+  // Check largest file dimensions, update max if needed
   if ((post.w * post.h) > largestImageDimensions) {
     largestImageDimensions = (post.w * post.h);
     $("#imageStats-largestDimensions").html(post.w + "x" + post.h);
-    $("#imageStats-largestDimensionsFn").html("<abbr title=\"" + post.filename + post.ext + "\">" + post.filename.slice(0,18) + "</abbr>");
+    $("#imageStats-largestDimensionsFn").html(post.filename + post.ext);
   }
-  // Check filesize, update max if needed
+  // Check largest filesize, update max if needed
   if (post.fsize > largestImageFs) {
     largestImageFs = post.fsize;
     $("#imageStats-largestFilesize").html(bytesToSize(post.fsize));
-    $("#imageStats-largestFilesizeFn").html("<abbr title=\"" + post.filename + post.ext + "\">" + post.filename.slice(0,18) + "</abbr>");
+    $("#imageStats-largestFilesizeFn").html(post.filename + post.ext);
+  }
+  // Check smallest file dimensions, update min if needed
+  if ((post.w * post.h) < smallestImageDimensions) {
+    smallestImageDimensions = (post.w * post.h);
+    $("#imageStats-smallestDimensions").html(post.w + "x" + post.h);
+    $("#imageStats-smallestDimensionsFn").html(post.filename + post.ext);
+  }
+  // Check smallest filesize, update min if needed
+  if (post.fsize < smallestImageFs) {
+    smallestImageFs = post.fsize;
+    $("#imageStats-smallestFilesize").html(bytesToSize(post.fsize));
+    $("#imageStats-smallestFilesizeFn").html(post.filename + post.ext);
   }
   // If there is an image
   if (post.filename) {
@@ -361,3 +441,21 @@ function bytesToSize(bytes) {
   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 };
+
+function secondsToString(seconds) {
+  var numdays = Math.floor((seconds % 31536000) / 86400); 
+  var numhours = Math.floor(((seconds % 31536000) % 86400) / 3600);
+  var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
+  var numseconds = (((seconds % 31536000) % 86400) % 3600) % 60;
+  var string = ""
+  if (numdays > 0) {
+    string = numdays + " days " + numhours + " hours " + numminutes + " minutes " + numseconds + " seconds";
+  } else if (numhours > 0) {
+    string = numhours + " hours " + numminutes + " minutes " + numseconds + " seconds";
+  } else if (numminutes > 0) {
+    string = numminutes + " minutes " + numseconds + " seconds";
+  } else {
+    string = numseconds + " seconds";
+  }
+  return string;
+}

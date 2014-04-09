@@ -41,43 +41,49 @@ TIMELINE ANALYTICS
 ===============
 REPLY ANALYTICS
 ===============
-[TODO] General info
+[DONE] General info
 
-- Thread Link
-- OP Time
-- # Total Replies
-- # Replies Image only {GRAPH/PIE} 
-- # Replies Comment only {GRAPH/PIE}
-- # Replies Image + Comment {GRAPH/PIE}
+[DONE] - Thread Link
+[DONE] - OP Time
+[DONE] - # Total Replies
+[DONE] - # Replies Image only {GRAPH/PIE} 
+[DONE] - # Replies Comment only {GRAPH/PIE}
+[DONE] - # Replies Image + Comment {GRAPH/PIE}
 
-[TODO] Time between replies
+[UPDT] Time between replies
 
-- Longest gap (may indicate thread revivals)
-- Shortest gap (may indicate samefagging) 
-- Average gap between replies
-- Time to first reply
+[DONE] - Total thread length
+[DONE] - Longest gap (may indicate thread revivals)
+[UPDT] - Shortest gap (may indicate samefagging) 
+[DONE] - Average gap between replies
+[DONE] - Time to first reply
+[DONE] - Replies per minute
 
 [TODO] Influential replies
 
 - Replies that have lots of replies themselves
 - Link to those replies
 
+[TODO] Map
+
+- Geo map of replies, on boards that support it
+
 ===============
 IMAGE ANALYTICS
 ===============
-[UPDT] Largest & Smallest Images
-- Largest Dimensions (show filename + ext)
-- Largest Filesize (human readable) (show filename + ext)
-[TODO] - Smallest Dimensions (show filename + ext)
-[TODO] - Smallest Filesize (human readable) (show filename + ext)
+[DONE] Largest & Smallest Images
+[DONE] - Largest Dimensions (show filename + ext)
+[DONE] - Largest Filesize (human readable) (show filename + ext)
+[DONE] - Smallest Dimensions (show filename + ext)
+[DONE] - Smallest Filesize (human readable) (show filename + ext)
 
 [UPDT] Image source identification
 
-- identify source of image based of file name
-- Tumblr
-- Facebook
-- imgur
-- 4chan
+[DONE] - identify source of image based of file name
+[DONE] - Tumblr
+[DONE] - Facebook
+[DONE] - imgur
+[DONE] - 4chan
 [TODO] - Screenshot/Snapshot
 - etc.
 

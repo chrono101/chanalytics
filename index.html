@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['timeline']}]}"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['timeline', 'corechart']}]}"></script>
   <!--<script src="http://raw.github.com/afeld/jsonp/v0.1.0/jsonp.js">-->  
   <script type="text/javascript" src="analytics.js"></script>
   <script>
@@ -73,7 +73,8 @@
             </select>
           </div>
           <div class="form-group">
-            <button type="button" id="getStatsBtn"  data-loading-text="Working..." class="btn btn-primary">Get Data</button>
+            <button type="button" id="getStatsBtn"  class="btn btn-primary">Get Data</button>
+            <button type="button" id="getThreadsBtn" class="btn btn-primary">Get Threads</button>
             <button type="button" id="saveStatsBtn" class="btn btn-disabled">Save Data</button>
           </div>
         </form>
@@ -114,22 +115,42 @@
       <div class="col-md-12">
         <ul class="nav nav-tabs" id="reply-tabs">
           <li class="active"><a href="#reply-general" data-toggle="tab">General</a></li>
-          <li><a href="#reply-influential" data-toggle="tab">Influential Replies</a></li>
           <li><a href="#reply-timing" data-toggle="tab">Timing</a></li>
+          <li><a href="#reply-influential" data-toggle="tab">Influential Replies</a></li>          
+          <li><a href="#reply-map" data-toggle="tab">Map</a></li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="reply-general">
-            <table id="generalStats" class="table table-striped">
-              <tr><td>Thread Link</td><td><a id="thread-link" href="#"></a></td></tr>
-              <tr><td>OP Time</td><td id="replyStats-opTime"></td></tr>
-              <tr><td>Replies</td><td id="replyStats-replies"></td></tr>
-              <tr><td>Images</td><td id="replyStats-images"></td></tr>
-            </table>
+            <div class="row">
+              <div class="col-md-8">
+                <table class="table table-striped">
+                  <tr><td>Thread Link</td><td><a id="thread-link" href="#"></a></td></tr>
+                  <tr><td>OP Time</td><td id="replyStats-opTime"></td></tr>
+                  <tr><td>OP Snippet</td><td id="replyStats-opSnippet"></td></tr>
+                  <tr><td>Total Replies</td><td id="replyStats-replies"></td></tr>
+                  <tr><td>Total Images</td><td id="replyStats-images"></td></tr>
+                </table>
+              </div>
+              <div class="col-md-4">
+                <h3>Post Types</h3>
+                <div id="reply-type-chart"></div>
+              </div>
+            </div>
           </div>          
+          <div class="tab-pane" id="reply-timing">
+            <table class="table table-striped">
+              <tr><td>Total Length</td><td id="replyStats-timingLength"></td></tr>
+              <tr><td>Time to First Reply</td><td id="replyStats-timingFirst"></td></tr>
+              <tr><td>Replies/minute</td><td id="replyStats-timingPerMinute"></td></tr>
+              <tr><td>Avg Time Between Replies</td><td id="replyStats-timingAvgTime"></td></tr>
+              <tr><td>Longest Time Between Replies</td><td id="replyStats-timingLongestTime"></td></tr>
+              <tr><td>Shortest Time Between Replies</td><td id="replyStats-timingShortestTime"></td></tr>
+            </table>
+          </div>
           <div class="tab-pane" id="reply-influential">
             <p><em>Analytic coming soon...</em></p>
-          </div>
-          <div class="tab-pane" id="reply-timing">
+          </div>          
+          <div class="tab-pane" id="reply-map">
             <p><em>Analytic coming soon...</em></p>
           </div>
         </div>        
@@ -153,10 +174,10 @@
           <div class="tab-content">
             <div class="tab-pane active" id="image-large-and-small">
               <table id="imageStats" class="table table-striped">   
-                <tr><td>Largest Image Dimensions</td><td id="imageStats-largestDimensions"></td></tr>
-                <tr><td>Filename</td><td id="imageStats-largestDimensionsFn"></td></tr>
-                <tr><td>Largest Image Filesize</td><td id="imageStats-largestFilesize"></td></tr>
-                <tr><td>Filename</td><td id="imageStats-largestFilesizeFn"></td></tr>
+                <tr><td>Largest Image Dimensions</td><td id="imageStats-largestDimensions"></td><td id="imageStats-largestDimensionsFn"></td></tr>          
+                <tr><td>Largest Image Filesize</td><td id="imageStats-largestFilesize"></td><td id="imageStats-largestFilesizeFn"></td></tr>
+                <tr><td>Smallest Image Dimensions</td><td id="imageStats-smallestDimensions"></td><td id="imageStats-smallestDimensionsFn"></td></tr>
+                <tr><td>Smallest Image Filesize</td><td id="imageStats-smallestFilesize"></td><td id="imageStats-smallestFilesizeFn"></td></tr>
             </table>
             </div>
             <div class="tab-pane" id="image-type">
