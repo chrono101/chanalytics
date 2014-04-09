@@ -137,7 +137,9 @@ function getThreadStats() {
 function analytic_replies(thread) {
 // General Stats
 $("#replyStats-opTime").html(new Date(thread.posts[0].time * 1000));
-$("#replyStats-opSnippet").html("<em>\"" + thread.posts[0].com.slice(0, 50) + "\"</em>");
+if (thread.posts[0].com) {
+  $("#replyStats-opSnippet").html("<em>\"" + thread.posts[0].com.slice(0, 50) + "\"</em>");
+}
 $("#replyStats-replies").html(thread.posts[0].replies);
 $("#replyStats-images").html(thread.posts[0].images + 1);
   
@@ -185,8 +187,6 @@ if (thread.posts[0].replies > 0) {
       longestTime = time;
     }
     if (time < shortestTime) {
-      alert("New Shortest Time: " + time);
-      alert("Time 1: " + thread.posts[i+1].time + " Time 2: " + thread.posts[i].time);
       shortestTime = time;
     }
     totalTime = totalTime + time;
