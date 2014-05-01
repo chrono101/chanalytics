@@ -16,6 +16,7 @@ OVERALL DESIGN
 MISC
 ===============
 - Look into Apache Mahout and Python NLPTK
+- Look into D3 library
 
 ===============
 GENERAL ISSUES
@@ -68,7 +69,7 @@ REPLY ANALYTICS
 - Replies that have lots of replies themselves
 - Link to those replies
 
-[TODO] Map
+[DONE] Map
 
 - Geo map of replies, on boards that support it
 
@@ -101,11 +102,11 @@ IMAGE ANALYTICS
 - Using 4chan filename format, figure out when image was last posted
 - "X time ago" format (with exact date on mouseover)
 
-[TODO] Embedded Archive
+[DONE] Embedded Archive
 
 - Take (width*height)/bytes
 - Sort by highest ratio
-- List full filename  with link
+[TODO] - List full filename  with link
 
 [TODO] Image Extensions
 

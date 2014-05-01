@@ -18,6 +18,11 @@ $( document ).ready(function() {
   // This is to automatically resize Google charts on tab changes
   $('a[data-toggle="tab"].timeline-tab').on('shown.bs.tab', function (e) {
     analytic_timeline(global_threadData);
+    
+  });
+  
+  $('a[data-toggle="tab"].reply-tab').on('shown.bs.tab', function (e) {
+    analytic_replies(global_threadData);
   });
 });
 
@@ -170,6 +175,24 @@ $.each(thread.posts, function(i, post) {
 var repliesPC_dataTable = google.visualization.arrayToDataTable(repliesArray);
 repliesPC_chart.draw(repliesPC_dataTable, { });
 
+// Country Map
+  var countriesArray = [];
+  var countriesDataTable = [["Country", "Posts"]];
+  $.each(thread.posts, function(i, post) {
+    if (post.country != "XX") {
+      countriesArray[post.country] = Number(countriesArray[post.country] || 0) + 1;
+    }
+  });
+  for (var country in countriesArray) {
+    countriesDataTable.push([country, countriesArray[country]]);
+  }
+  var geoChart_options = {};
+  var geoChart_container = document.getElementById("reply-map");
+  var geoChart_chart = new google.visualization.GeoChart(geoChart_container);
+  var geoChart_dataTable = new google.visualization.DataTable();  
+  geoChart_dataTable = google.visualization.arrayToDataTable(countriesDataTable);
+  geoChart_chart.draw(geoChart_dataTable, geoChart_options);
+
 // Timing Stats
 // Do nothing if only 1 reply
 if (thread.posts[0].replies > 0) {
@@ -314,6 +337,8 @@ var smallestImageFs = 8388608; // Max on /hr/
 var fileNameCounts = [];
 var fileExtCounts = [];
 var fileSourceCounts = [];
+var fileRatios = [];
+var file4chanReposts = [];
 
 $.each(thread.posts, function (i, post) {
   // Check largest file dimensions, update max if needed
@@ -342,50 +367,61 @@ $.each(thread.posts, function (i, post) {
   }
   // If there is an image
   if (post.filename) {
-    // Update the filename and file extension counts
-    if (!fileNameCounts[post.filename]) {
-      fileNameCounts[post.filename] = 0;
-    }
-    if (!fileExtCounts[post.ext] ) {
-      fileExtCounts[post.ext] = 0;
-    }
-    fileNameCounts[post.filename] = fileNameCounts[post.filename] + 1;
-    fileExtCounts[post.ext] = fileExtCounts[post.ext] + 1;
+    // Update the filename and file extension counts    
+    fileNameCounts[post.filename + post.ext] = (Number(fileNameCounts[post.filename]) || 0) + 1;
+    fileExtCounts[post.ext] = (Number(fileExtCounts[post.ext]) || 0) + 1;
     // Update the image source counts
-    if ((post.filename.charAt(0) == "1") && (post.filename.length == 13)) {
-      fileSourceCounts["4chan"] = (Number(fileSourceCounts["4chan"]) || 0) + 1;
-    } else if (post.filename.slice(0,7) == "tumblr_") {
-      fileSourceCounts["Tumblr"] = (Number(fileSourceCounts["Tumblr"]) || 0) + 1;
-    } else if (post.filename.length == 7) {
-      fileSourceCounts["Imgur"] = (Number(fileSourceCounts["Imgur"]) || 0) + 1;
-    } else if (post.filename.slice(-2) == "_n" || post.filename.slice(-2) == "_o" || post.filename.slice(-2) == "_s") {
-      fileSourceCounts["Facebook"] = (Number(fileSourceCounts["Facebook"]) || 0) + 1;
-    } else if (post.filename.slice(0, 3) == "DSC" || post.filename.slice(0,3) == "IMG" || post.filename.slice(0,4) == "IMAG") {
-      fileSourceCounts["Camera"] = (Number(fileSourceCounts["Camera"]) || 0) + 1;
-    } else {
-      fileSourceCounts["Unknown"] = (Number(fileSourceCounts["Unknown"]) || 0) + 1;
-    }
+    var source = getImageSource(post.filename);
+    fileSourceCounts[source] = (Number(fileSourceCounts[source]) || 0) + 1;      
+    if (source == "4chan") {
+      file4chanReposts[post.filename + post.ext] = post.filename;
+    }    
+    
+    // Compute dimensions to filesize ratio
+    var ratio = ((post.w * post.h) / post.fsize).toPrecision(3);
+    fileRatios[post.filename + post.ext] = ratio;
   }
 });
 
 var nameCountsString = "";
-for(var filename in fileNameCounts){
-nameCountsString = nameCountsString + ("<tr><td>" + filename + "</td><td>" + fileNameCounts[filename] + "</td></tr>");
-}var extCountsString = "";
+for(var filename in fileNameCounts) {
+  nameCountsString = nameCountsString + ("<tr><td>" + filename + "</td><td>" + fileNameCounts[filename] + "</td></tr>");
+}
+var extCountsString = "";
 for (var ext in fileExtCounts) {
 extCountsString = extCountsString + ("<tr><td>" + ext + "</td><td>" + fileExtCounts[ext] + "</td></tr>");
-}$("#imageStats-FileTypeFreqs").html(extCountsString);
+}
+$("#imageStats-FileTypeFreqs").html(extCountsString);
 $("#imageStats-FnFreqs").html(nameCountsString);
 
-var sortedFileSourceCounts = []
+var sortedFileSourceCounts = [];
 for (var source in fileSourceCounts) {
-sortedFileSourceCounts.push([source, (fileSourceCounts[source])]);
-}sortedFileSourceCounts.sort(function (a, b) { return a[1] - b[1]});
+  sortedFileSourceCounts.push([source, (fileSourceCounts[source])]);
+}
+sortedFileSourceCounts.sort(function (a, b) { return a[1] - b[1]});
 var sourceCountsString = "";
 for (var i = 0; i < sortedFileSourceCounts.length; i++) {
-sourceCountsString = ("<tr><td>" + sortedFileSourceCounts[i][0] + "</td><td>" + sortedFileSourceCounts[i][1] + "</td></tr>") + sourceCountsString;
-}//sourceCountsString = "<thead><tr><td>Source</td><td>No. Images</td></tr></thead>" + sourceCountsString;
+  sourceCountsString = ("<tr><td>" + sortedFileSourceCounts[i][0] + "</td><td>" + sortedFileSourceCounts[i][1] + "</td></tr>") + sourceCountsString;
+}
 $("#imageStats-ImageSources").html(sourceCountsString);
+
+var sortedFileRatios = [];
+for (var filename in fileRatios) {
+  sortedFileRatios.push([filename, (fileRatios[filename])]);
+}
+sortedFileRatios.sort(function (a, b) { return a[1] - b[1]});
+var ratioString = "";
+for (var i = 0; i < sortedFileRatios.length; i++) {
+  ratioString = ("<tr><td>" + sortedFileRatios[i][0] + "</td><td>" + sortedFileRatios[i][1] + "</td></tr>") + ratioString;
+}
+$("#imageStats-EmbeddedArchive").html(ratioString);
+
+var repostsString = "";
+for (var filename in file4chanReposts) {
+  // TODO: Fix this
+  repostsString = repostsString + ("<tr><td>" + filename + "</td><td>" + new Date(Math.floor(file4chanReposts[filename] * 0.01)) + "</td></tr>");
+}
+$("#imageStats-4chanReposts").html(repostsString);
 
 return;
 }
@@ -458,4 +494,22 @@ function secondsToString(seconds) {
     string = numseconds + " seconds";
   }
   return string;
+}
+
+function getImageSource(filename) {
+  var source = "";
+  if ((filename.charAt(0) == "1") && (filename.length == 13)) {
+    source = "4chan";      
+  } else if (filename.slice(0,7) == "tumblr_") {
+    source = "Tumblr";
+  } else if (filename.length == 7) {
+    source = "Imgur";
+  } else if (filename.slice(-2) == "_n" || filename.slice(-2) == "_o" || filename.slice(-2) == "_s") {
+    source = "Facebook";
+  } else if (filename.slice(0, 3) == "DSC" || filename.slice(0,3) == "IMG" || filename.slice(0,4) == "IMAG") {
+    source = "Camera";
+  } else {
+    source = "Unknown";    
+  }  
+  return source;
 }
