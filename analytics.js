@@ -186,7 +186,7 @@ repliesPC_chart.draw(repliesPC_dataTable, { });
   for (var country in countriesArray) {
     countriesDataTable.push([country, countriesArray[country]]);
   }
-  var geoChart_options = {};
+  var geoChart_options = { };
   var geoChart_container = document.getElementById("reply-map");
   var geoChart_chart = new google.visualization.GeoChart(geoChart_container);
   var geoChart_dataTable = new google.visualization.DataTable();  
@@ -412,14 +412,17 @@ for (var filename in fileRatios) {
 sortedFileRatios.sort(function (a, b) { return a[1] - b[1]});
 var ratioString = "";
 for (var i = 0; i < sortedFileRatios.length; i++) {
-  ratioString = ("<tr><td>" + sortedFileRatios[i][0] + "</td><td>" + sortedFileRatios[i][1] + "</td></tr>") + ratioString;
+  ratioString = ("<tr><td>" + sortedFileRatios[i][0] + "</td><td>" + sortedFileRatios[i][1] + " b/px</td></tr>") + ratioString;
 }
 $("#imageStats-EmbeddedArchive").html(ratioString);
 
 var repostsString = "";
+var now = Date.now();
 for (var filename in file4chanReposts) {
-  // TODO: Fix this
-  repostsString = repostsString + ("<tr><td>" + filename + "</td><td>" + new Date(Math.floor(file4chanReposts[filename] * 0.01)) + "</td></tr>");
+  var timestamp = Number(file4chanReposts[filename].slice(0,10));
+  var post = new Date(timestamp * 1000)
+  var elapsed = now - post.getTime();
+  repostsString = repostsString + ("<tr><td>" + filename + "</td><td>" + post + "</td><td>" + timeSince(post) + " ago</td></tr>");
 }
 $("#imageStats-4chanReposts").html(repostsString);
 
@@ -482,7 +485,7 @@ function secondsToString(seconds) {
   var numdays = Math.floor((seconds % 31536000) / 86400); 
   var numhours = Math.floor(((seconds % 31536000) % 86400) / 3600);
   var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
-  var numseconds = (((seconds % 31536000) % 86400) % 3600) % 60;
+  var numseconds = ((((seconds % 31536000) % 86400) % 3600) % 60).toPrecision(2);
   var string = ""
   if (numdays > 0) {
     string = numdays + " days " + numhours + " hours " + numminutes + " minutes " + numseconds + " seconds";
@@ -494,6 +497,34 @@ function secondsToString(seconds) {
     string = numseconds + " seconds";
   }
   return string;
+}
+
+/*
+ * http://stackoverflow.com/questions/3177836/how-to-format-time-since-xxx-e-g-4-minutes-ago-similar-to-stack-exchange-site
+ */ 
+function timeSince(date) {
+    var seconds = Math.floor((new Date() - date) / 1000);
+    var interval = Math.floor(seconds / 31536000);
+    if (interval > 1) {
+        return interval + " years";
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+        return interval + " months";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+        return interval + " days";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+        return interval + " hours";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+        return interval + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
 }
 
 function getImageSource(filename) {
