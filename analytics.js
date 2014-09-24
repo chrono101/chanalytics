@@ -1,10 +1,10 @@
 var global_threadData;
 
 $( document ).ready(function() {
-  getBoardsListing();  
+  getBoardsListing(); 
 
-  $("#board").change(function() {
-    getThreadsListing();
+  $("#board").change(function() {    
+    getThreadsListing();    
   });
   
   $("#getThreadsBtn").click(function() {
@@ -12,13 +12,31 @@ $( document ).ready(function() {
   });
 
   $("#getStatsBtn").click(function() {
+    var $this = $(this);
+    if ($this.hasClass("btn-disabled")) {      
+      return;
+    }
+    // Countdown timer on the button to prevent spamming
+    $this.toggleClass("btn-primary").toggleClass("btn-disabled");    
+    var counter = 10;
+    setInterval(function() {
+      counter--;
+      if (counter >= 0) {
+        $this.text("Wait " + counter);
+      }
+      if (counter == 0) {
+        clearInterval(counter)
+        $("#getStatsBtn").toggleClass("btn-disabled").toggleClass("btn-primary");
+        $("#getStatsBtn").text("Analyze");
+      }
+    }, 1000);
+    
     getThreadStats();
   });
 
   // This is to automatically resize Google charts on tab changes
   $('a[data-toggle="tab"].timeline-tab').on('shown.bs.tab', function (e) {
-    analytic_timeline(global_threadData);
-    
+    analytic_timeline(global_threadData);    
   });
   
   $('a[data-toggle="tab"].reply-tab').on('shown.bs.tab', function (e) {
@@ -345,25 +363,25 @@ $.each(thread.posts, function (i, post) {
   if ((post.w * post.h) > largestImageDimensions) {
     largestImageDimensions = (post.w * post.h);
     $("#imageStats-largestDimensions").html(post.w + "x" + post.h);
-    $("#imageStats-largestDimensionsFn").html(post.filename + post.ext);
+    $("#imageStats-largestDimensionsFn").html(generateImageThumb(post));
   }
   // Check largest filesize, update max if needed
   if (post.fsize > largestImageFs) {
     largestImageFs = post.fsize;
     $("#imageStats-largestFilesize").html(bytesToSize(post.fsize));
-    $("#imageStats-largestFilesizeFn").html(post.filename + post.ext);
+    $("#imageStats-largestFilesizeFn").html(generateImageThumb(post));
   }
   // Check smallest file dimensions, update min if needed
   if ((post.w * post.h) < smallestImageDimensions) {
     smallestImageDimensions = (post.w * post.h);
     $("#imageStats-smallestDimensions").html(post.w + "x" + post.h);
-    $("#imageStats-smallestDimensionsFn").html(post.filename + post.ext);
+    $("#imageStats-smallestDimensionsFn").html(generateImageThumb(post));
   }
   // Check smallest filesize, update min if needed
   if (post.fsize < smallestImageFs) {
     smallestImageFs = post.fsize;
     $("#imageStats-smallestFilesize").html(bytesToSize(post.fsize));
-    $("#imageStats-smallestFilesizeFn").html(post.filename + post.ext);
+    $("#imageStats-smallestFilesizeFn").html(generateImageThumb(post));
   }
   // If there is an image
   if (post.filename) {
@@ -532,7 +550,7 @@ function getImageSource(filename) {
   if ((filename.charAt(0) == "1") && (filename.length == 13)) {
     source = "4chan";      
   } else if (filename.slice(0,7) == "tumblr_") {
-    source = "Tumblr";
+    source = "Tumblr"
   } else if (filename.length == 7) {
     source = "Imgur";
   } else if (filename.slice(-2) == "_n" || filename.slice(-2) == "_o" || filename.slice(-2) == "_s") {
@@ -543,4 +561,14 @@ function getImageSource(filename) {
     source = "Unknown";    
   }  
   return source;
+}
+
+// Generates a URL to the image for the given post
+function generateImageLink(post) {
+ return "<a href=\"http://i.4cdn.org/" + $("#board").val() + "/" + post.tim + post.ext + "\">" + post.filename + post.ext + "</a>";
+}
+
+// Generates a thumbnail image for the given post
+function generateImageThumb(post) {
+  return "<a href=\"http://i.4cdn.org/" + $("#board").val() + "/" + post.tim + post.ext + "\"><img src=\"http://t.4cdn.org/" + $("#board").val() + "/" + post.tim + "s.jpg\" /></a>";
 }
