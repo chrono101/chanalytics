@@ -204,7 +204,7 @@ repliesPC_chart.draw(repliesPC_dataTable, { });
   for (var country in countriesArray) {
     countriesDataTable.push([country, countriesArray[country]]);
   }
-  var geoChart_options = { };
+  var geoChart_options = { colorAxis: {colors: ["#FF0000", "#FFFF00", "#008000"] } };
   var geoChart_container = document.getElementById("reply-map");
   var geoChart_chart = new google.visualization.GeoChart(geoChart_container);
   var geoChart_dataTable = new google.visualization.DataTable();  
@@ -363,25 +363,29 @@ $.each(thread.posts, function (i, post) {
   if ((post.w * post.h) > largestImageDimensions) {
     largestImageDimensions = (post.w * post.h);
     $("#imageStats-largestDimensions").html(post.w + "x" + post.h);
-    $("#imageStats-largestDimensionsFn").html(generateImageThumb(post));
+    $("#imageStats-largestDimensionsThumb").html(generateImageThumb(post));
+    $("#imageStats-largestDimensionsFn").html(post.filename + post.ext);
   }
   // Check largest filesize, update max if needed
   if (post.fsize > largestImageFs) {
     largestImageFs = post.fsize;
     $("#imageStats-largestFilesize").html(bytesToSize(post.fsize));
-    $("#imageStats-largestFilesizeFn").html(generateImageThumb(post));
+    $("#imageStats-largestFilesizeThumb").html(generateImageThumb(post));
+    $("#imageStats-largestFilesizeFn").html(post.filename + post.ext);
   }
   // Check smallest file dimensions, update min if needed
   if ((post.w * post.h) < smallestImageDimensions) {
     smallestImageDimensions = (post.w * post.h);
     $("#imageStats-smallestDimensions").html(post.w + "x" + post.h);
-    $("#imageStats-smallestDimensionsFn").html(generateImageThumb(post));
+    $("#imageStats-smallestDimensionsThumb").html(generateImageThumb(post));
+    $("#imageStats-smallestDimensionsFn").html(post.filename + post.ext);
   }
   // Check smallest filesize, update min if needed
   if (post.fsize < smallestImageFs) {
     smallestImageFs = post.fsize;
     $("#imageStats-smallestFilesize").html(bytesToSize(post.fsize));
-    $("#imageStats-smallestFilesizeFn").html(generateImageThumb(post));
+    $("#imageStats-smallestFilesizeThumb").html(generateImageThumb(post));
+    $("#imageStats-smallestFilesizeFn").html(post.filename + post.ext);
   }
   // If there is an image
   if (post.filename) {
@@ -392,8 +396,8 @@ $.each(thread.posts, function (i, post) {
     var source = getImageSource(post.filename);
     fileSourceCounts[source] = (Number(fileSourceCounts[source]) || 0) + 1;      
     if (source == "4chan") {
-      file4chanReposts[post.filename + post.ext] = post.filename;
-    }    
+      file4chanReposts[post.filename + post.ext] = post;
+    }
     
     // Compute dimensions to filesize ratio
     var ratio = ((post.w * post.h) / post.fsize).toPrecision(3);
@@ -437,10 +441,10 @@ $("#imageStats-EmbeddedArchive").html(ratioString);
 var repostsString = "";
 var now = Date.now();
 for (var filename in file4chanReposts) {
-  var timestamp = Number(file4chanReposts[filename].slice(0,10));
+  var timestamp = Number(file4chanReposts[filename].filename.slice(0,10));
   var post = new Date(timestamp * 1000)
   var elapsed = now - post.getTime();
-  repostsString = repostsString + ("<tr><td>" + filename + "</td><td>" + post + "</td><td>" + timeSince(post) + " ago</td></tr>");
+  repostsString = repostsString + ("<tr><td>" + generateImageThumb(file4chanReposts[filename]) + "</td><td>" + post + "</td><td>" + timeSince(post) + " ago</td></tr>");
 }
 $("#imageStats-4chanReposts").html(repostsString);
 
@@ -548,7 +552,7 @@ function timeSince(date) {
 function getImageSource(filename) {
   var source = "";
   if ((filename.charAt(0) == "1") && (filename.length == 13)) {
-    source = "4chan";      
+    source = "4chan";
   } else if (filename.slice(0,7) == "tumblr_") {
     source = "Tumblr"
   } else if (filename.length == 7) {
@@ -559,7 +563,7 @@ function getImageSource(filename) {
     source = "Camera";
   } else {
     source = "Unknown";    
-  }  
+  }
   return source;
 }
 
@@ -570,5 +574,5 @@ function generateImageLink(post) {
 
 // Generates a thumbnail image for the given post
 function generateImageThumb(post) {
-  return "<a href=\"http://i.4cdn.org/" + $("#board").val() + "/" + post.tim + post.ext + "\"><img src=\"http://t.4cdn.org/" + $("#board").val() + "/" + post.tim + "s.jpg\" /></a>";
+  return "<a href=\"http://i.4cdn.org/" + $("#board").val() + "/" + post.tim + post.ext + "\"><img src=\"http://t.4cdn.org/" + $("#board").val() + "/" + post.tim  + "s.jpg\" /></a>";
 }
